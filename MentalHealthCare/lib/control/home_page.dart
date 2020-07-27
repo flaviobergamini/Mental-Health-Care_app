@@ -14,23 +14,24 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mental Health Care"),
-        centerTitle: true,
-        backgroundColor: Colors.blue[400],
-      ),
-      backgroundColor: Colors.blue[400],
+          elevation: 0,
+          title: Text(
+            "Mental Health Care",
+            style: TextStyle(fontSize: 25),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.green[300]),
+      backgroundColor: Colors.green[300],
       body: Padding(
         padding: EdgeInsets.all(35.0),
-        child: Expanded(
-          child: Container(
-            decoration: BoxDecoration(color: Colors.white),
-            child: ListView.builder(
-                padding: EdgeInsets.all(10.0),
-                itemCount: 4,
-                itemBuilder: (context, index) {
-                  return _telas(context, index);
-                }),
-          ),
+        child: Container(
+          decoration: BoxDecoration(color: Colors.transparent),
+          child: ListView.builder(
+              padding: EdgeInsets.all(10.0),
+              itemCount: 4,
+              itemBuilder: (context, index) {
+                return _telas(context, index);
+              }),
         ),
       ),
     );
@@ -39,21 +40,31 @@ class _HomePageState extends State<HomePage> {
 
 Widget _telas(BuildContext context, int index) {
   String appText;
+  String image;
+  String description;
   switch (index) {
     case 0:
       appText = "Agenda";
+      image = "images/agenda.jpeg";
+      description = "Organize sua vida,\nfaça suas anotações";
       break;
     case 1:
       appText = "Meditação";
+      image = "images/yoga.jpeg";
+      description = "Rezerve um momento\n para clarear as ideias";
       break;
     case 2:
       appText = "Exercícios";
+      image = "images/meditacao.jpeg";
+      description = "Mantenha a saúde\n em dia";
       break;
     case 3:
       appText = "Respiração";
+      image = "images/nature.jpeg";
+      description = "relaxe respirando\n da menhor forma";
       break;
   }
-  return GestureDetector(
+  return InkWell(
     child: Card(
       child: Padding(
         padding: EdgeInsets.all(10.0),
@@ -65,7 +76,7 @@ Widget _telas(BuildContext context, int index) {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
-                    image: AssetImage("images/person.png"), fit: BoxFit.cover),
+                    image: AssetImage(image), fit: BoxFit.cover),
               ),
             ),
             Padding(
@@ -77,6 +88,12 @@ Widget _telas(BuildContext context, int index) {
                     appText,
                     style:
                         TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    description,
+                    style:
+                        TextStyle(fontSize: 13.0, fontWeight: FontWeight.w400),
+                    maxLines: 2,
                   ),
                 ],
               ),
