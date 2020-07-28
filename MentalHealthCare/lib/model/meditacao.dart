@@ -28,7 +28,11 @@ class _MeditacaoState extends State<Meditacao> {
             height: 1000.0,
           ),
           Padding(
-            padding: EdgeInsets.all(35.0),
+            padding: EdgeInsets.only(
+                left: 35.0,
+                right: 35.0,
+                top: 30.0,
+                bottom: screenSize.height * 0.1),
             child: Container(
               decoration: BoxDecoration(color: Colors.transparent),
               child: ListView.builder(
@@ -37,6 +41,33 @@ class _MeditacaoState extends State<Meditacao> {
                   itemBuilder: (context, index) {
                     return _videos(context, index);
                   }),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: (screenSize.height * 0.8)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                _buildCircle("1", "Início", 2, 1),
+                Container(
+                  height: 1.0,
+                  width: 35.0,
+                  color: Colors.grey[500],
+                ),
+                _buildCircle("2", "", 2, 2),
+                Container(
+                  height: 1.0,
+                  width: 35.0,
+                  color: Colors.grey[500],
+                ),
+                _buildCircle("3", "", 1, 3),
+                Container(
+                  height: 1.0,
+                  width: 35.0,
+                  color: Colors.grey[500],
+                ),
+                _buildCircle("3", "Fim", 1, 3),
+              ],
             ),
           ),
         ],
@@ -61,7 +92,7 @@ Widget _videos(BuildContext context, int index) {
       description = "";
       break;
     case 2:
-      appText = "Porque Meditar?";
+      appText = "Por que Meditar?";
       image = "images/m2.jpeg";
       description = "";
       break;
@@ -146,5 +177,46 @@ Widget _videos(BuildContext context, int index) {
           break;
       }
     },
+  );
+}
+
+Widget _buildCircle(String title, String subtitle, int status, int thisStatus) {
+  Color backColor;
+  Widget child;
+
+  if (status < thisStatus) {
+    backColor = Colors.grey[500];
+    child = Text(
+      title,
+      style: TextStyle(color: Colors.white),
+    );
+  } else if (status == thisStatus) {
+    backColor = Colors.blue;
+    child = Stack(
+      alignment: Alignment.center,
+      children: <Widget>[
+        Text(
+          title,
+          style: TextStyle(color: Colors.white),
+        ),
+        CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        ),
+      ],
+    );
+  } else {
+    backColor = Colors.green;
+    child = Icon(Icons.check, color: Colors.white);
+  }
+
+  return Column(
+    children: <Widget>[
+      CircleAvatar(
+        radius: 20.0,
+        backgroundColor: backColor,
+        child: child,
+      ),
+      Text(subtitle)
+    ],
   );
 }
