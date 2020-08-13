@@ -1,8 +1,15 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:MentalHealthCare/control/app_builder.dart';
 import 'package:MentalHealthCare/view/info_meditacao.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_youtube/flutter_youtube.dart';
+import 'package:path_provider/path_provider.dart';
 
 const API_KEY = "AIzaSyCUO4z2uEzVph-JilCmcqrTvZrS0GI7VKg";
+
+int _cont = 0;
 
 class Meditacao extends StatefulWidget {
   @override
@@ -10,6 +17,64 @@ class Meditacao extends StatefulWidget {
 }
 
 class _MeditacaoState extends State<Meditacao> {
+  // ------------------------------------------------------------------------------------------
+  List _toDoList = [];
+
+  Map<String, dynamic> _lastRemoved;
+  int _lastRemovedPos;
+
+  @override
+  void initState() {
+    super.initState();
+    _readData().then((data) {
+      setState(() {
+        _toDoList = json.decode(data);
+        print(_toDoList.toString());
+      });
+    });
+  }
+
+   void _addToDo() {
+    setState(() {
+      Map<String, dynamic> newToDo = Map();
+      newToDo["pos"] = _cont;
+      _toDoList.add(newToDo);
+      _saveData();
+    });
+  }
+
+  Future<File> _getFile() async {
+    final directory = await getApplicationSupportDirectory();
+    return File("${directory.path}/medita.json");
+  }
+
+  Future<File> _saveData() async {
+    String data = json.encode(_toDoList);
+
+    final file = await _getFile();
+    return file.writeAsString(data);
+  }
+
+  Future<String> _readData() async {
+    try {
+      final file = await _getFile();
+      return file.readAsString();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<Null> _atualiza() async {
+    await Future.delayed(Duration(seconds: 1));
+
+    setState(() {
+      _toDoList.add(_cont);
+      return 0;
+      });
+      _saveData();
+    return null;
+  }
+  // ------------------------------------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -48,25 +113,25 @@ class _MeditacaoState extends State<Meditacao> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                _buildCircle("1", "Início", 2, 1),
+                _buildCircle("1", "Início", _cont, 1),
                 Container(
                   height: 1.0,
                   width: 35.0,
                   color: Colors.grey[500],
                 ),
-                _buildCircle("2", "", 2, 2),
+                _buildCircle("2", "", _cont, 2),
                 Container(
                   height: 1.0,
                   width: 35.0,
                   color: Colors.grey[500],
                 ),
-                _buildCircle("3", "", 1, 3),
+                _buildCircle("3", "", _cont, 3),
                 Container(
                   height: 1.0,
                   width: 35.0,
                   color: Colors.grey[500],
                 ),
-                _buildCircle("3", "Fim", 1, 3),
+                _buildCircle("3", "Fim", _cont, 3),
               ],
             ),
           ),
@@ -152,30 +217,35 @@ Widget _videos(BuildContext context, int index) {
               apiKey: API_KEY,
               videoUrl:
                   "https://www.youtube.com/watch?v=98x8txJlGag&list=PLZ9-9MbIebj5Pn2MOj5mPR6nCUJ94r-7F&index=4");
+                  _cont++;
           break;
         case 1:
           FlutterYoutube.playYoutubeVideoByUrl(
               apiKey: API_KEY,
               videoUrl:
                   "https://www.youtube.com/watch?v=pRpayFySsto&list=PLZ9-9MbIebj5Pn2MOj5mPR6nCUJ94r-7F");
+                  _cont++;
           break;
         case 2:
           FlutterYoutube.playYoutubeVideoByUrl(
               apiKey: API_KEY,
               videoUrl:
                   "https://www.youtube.com/watch?v=SYJogxlkYnE&list=PLZ9-9MbIebj5Pn2MOj5mPR6nCUJ94r-7F&index=2");
+                  _cont++;
           break;
         case 3:
           FlutterYoutube.playYoutubeVideoByUrl(
               apiKey: API_KEY,
               videoUrl:
                   "https://www.youtube.com/watch?v=xnTBhgj0-_E&list=PLZ9-9MbIebj5Pn2MOj5mPR6nCUJ94r-7F&index=3");
+                  _cont++;
           break;
         case 4:
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => InfoMeditacao()));
           break;
       }
+      AppBuilder.of(context).rebuild(); 
     },
   );
 }
