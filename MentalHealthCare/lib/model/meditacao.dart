@@ -84,6 +84,15 @@ class _MeditacaoState extends State<Meditacao> {
         title: Text("Meditação"),
         centerTitle: true,
         backgroundColor: Colors.brown[900],
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.refresh), 
+            onPressed: (){
+              _cont = 0;
+              AppBuilder.of(context).rebuild(); 
+            },
+          ),
+        ],
       ),
       body: Stack(
         children: <Widget>[

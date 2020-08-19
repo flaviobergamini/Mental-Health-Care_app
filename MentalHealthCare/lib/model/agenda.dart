@@ -63,6 +63,7 @@ class _AgendaState extends State<Agenda> {
       ),
       body: Column(
         children: <Widget>[
+          Padding(padding: EdgeInsets.only(bottom: 17)),
           Container(
             padding: EdgeInsets.fromLTRB(17.0, 1.0, 7.0, 1.0),
             child: Row(

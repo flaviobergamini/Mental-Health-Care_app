@@ -44,7 +44,7 @@ class _ExercicioState extends State<Exercicio> {
 
   Future<File> _getFile() async {
     final directory = await getApplicationSupportDirectory();
-    return File("${directory.path}/respira.json");
+    return File("${directory.path}/exercicio.json");
   }
 
   Future<File> _saveData() async {
@@ -83,6 +83,15 @@ class _ExercicioState extends State<Exercicio> {
         title: Text("Exercícios"),
         centerTitle: true,
         backgroundColor: Colors.blue[500],
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.refresh), 
+            onPressed: (){
+              _cont = 0;
+              AppBuilder.of(context).rebuild(); 
+            },
+          ),
+        ],
       ),
       backgroundColor: Colors.blue[200],
       body: Stack(

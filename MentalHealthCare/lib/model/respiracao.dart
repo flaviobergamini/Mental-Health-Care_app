@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:MentalHealthCare/control/app_builder.dart';
@@ -9,29 +10,100 @@ import 'package:path_provider/path_provider.dart';
 const API_KEY = "AIzaSyCUO4z2uEzVph-JilCmcqrTvZrS0GI7VKg";
 
 int _cont = 0;
+List _toDoList = [];
+/*
+class CounterStorage {
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    return directory.path;
+  }
+
+  Future<File> get _localFile async {
+    final path = await _localPath;
+    return File('$path/respira.txt');
+  }
+
+  Future<int> readCounter() async {
+    try {
+      final file = await _localFile;
+
+      // Read the file
+      String contents = await file.readAsString();
+
+      return int.parse(contents);
+    } catch (e) {
+      // If encountering an error, return 0
+      return 0;
+    }
+  }
+
+  Future<File> writeCounter(int counter) async {
+    final file = await _localFile;
+
+    // Write the file
+    return file.writeAsString('$counter');
+  }
+}
+*/
+// ------------------------------------------------------------------------------------------
 
 class Respiracao extends StatefulWidget {
+  //CounterStorage storage;
   @override
   _RespiracaoState createState() => _RespiracaoState();
 }
 
 class _RespiracaoState extends State<Respiracao> {
-  // ------------------------------------------------------------------------------------------
-  List _toDoList = [];
-
-  Map<String, dynamic> _lastRemoved;
-  int _lastRemovedPos;
-
+  
+  //int _counter;
+/*
   @override
   void initState() {
     super.initState();
-    _readData().then((data) {
+    widget.storage.readCounter().then((int value) {
       setState(() {
-        _toDoList = json.decode(data);
-        print(_toDoList.toString());
+        _cont = value;
       });
     });
+  } */
+
+/*
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    return directory.path;
   }
+
+  Future<File> get _localFile async {
+    final path = await _localPath;
+    return File('$path/respira.txt');
+  }
+
+  Future<File> writeCounter(int counter) async {
+  final file = await _localFile;
+
+  // Write the file.
+  return file.writeAsString('$counter');
+}
+
+Future<int> readCounter() async {
+  try {
+    final file = await _localFile;
+
+    // Read the file.
+    String contents = await file.readAsString();
+
+    return int.parse(contents);
+  } catch (e) {
+    // If encountering an error, return 0.
+    return 0;
+  }
+}
+
+
+
+
 
    void _addToDo() {
     setState(() {
@@ -72,7 +144,7 @@ class _RespiracaoState extends State<Respiracao> {
       });
       _saveData();
     return null;
-  }
+  } */
   // ------------------------------------------------------------------------------------------
 
   @override
@@ -83,9 +155,18 @@ class _RespiracaoState extends State<Respiracao> {
       appBar: AppBar(
         title: Text("Respiração"),
         centerTitle: true,
-        backgroundColor: Colors.brown[900],
+        backgroundColor: Colors.green[300],
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.refresh), 
+            onPressed: (){
+              _cont = 0;
+              AppBuilder.of(context).rebuild(); 
+            },
+            ),
+        ],
       ),
-      backgroundColor: Colors.blue[200],
+      backgroundColor: Colors.green[400],
       body: Stack(
             children: <Widget>[
               Padding(
@@ -116,7 +197,6 @@ class _RespiracaoState extends State<Respiracao> {
                       color: Colors.grey[500],
                     ),
                     _buildCircle("2", "Final", _cont, 2),
-                    
                   ],
                 ),
               ),
