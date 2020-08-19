@@ -1,3 +1,5 @@
+//import 'package:MentalHealthCare/control/Database.dart';
+import 'package:MentalHealthCare/control/Database.dart';
 import 'package:MentalHealthCare/model/agenda.dart';
 import 'package:MentalHealthCare/model/exercicio.dart';
 import 'package:MentalHealthCare/model/meditacao.dart';
@@ -10,6 +12,28 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  ContactHelper helper = ContactHelper();
+  @override
+  void initState(){
+    super.initState();
+    AgendaDB ag = AgendaDB();
+    AtividadeDB at = AtividadeDB();
+    ag.title = "Monitoria de C207";
+    ag.ok = "true";
+    at.name = "Medita";
+    at.pos = "3";
+
+    helper.saveAgenda(ag);
+    helper.saveAtividade(at);
+
+    helper.getAllAgenda().then((list) {
+      print(list);
+    });
+    helper.getAllAtividade().then((list) {
+      print(list);
+    }); 
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
