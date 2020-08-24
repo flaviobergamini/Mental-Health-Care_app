@@ -19,13 +19,13 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     AgendaDB ag = AgendaDB();
     AtividadeDB at = AtividadeDB();
-    ag.title = "Monitoria de C207";
-    ag.ok = "true";
-    at.name = "Medita";
-    at.pos = "3";
+    //ag.title = "Monitoria de C207";
+    //ag.ok = "true";
+    //at.name = "Medita";
+    //at.pos = "3";
 
-    helper.saveAgenda(ag);
-    helper.saveAtividade(at);
+    //helper.saveAgenda(ag);
+    //.saveAtividade(at);
 
     helper.getAllAgenda().then((list) {
       print(list);

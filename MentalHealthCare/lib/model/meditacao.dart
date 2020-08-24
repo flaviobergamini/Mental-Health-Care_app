@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:MentalHealthCare/control/Database.dart';
 import 'package:MentalHealthCare/control/app_builder.dart';
 import 'package:MentalHealthCare/view/info_meditacao.dart';
 import 'package:flutter/material.dart';
@@ -18,61 +19,37 @@ class Meditacao extends StatefulWidget {
 
 class _MeditacaoState extends State<Meditacao> {
   // ------------------------------------------------------------------------------------------
-  List _toDoList = [];
-
-  Map<String, dynamic> _lastRemoved;
-  int _lastRemovedPos;
+  ContactHelper bd = ContactHelper();
+  AtividadeDB at = AtividadeDB();
 
   @override
   void initState() {
     super.initState();
-    _readData().then((data) {
-      setState(() {
-        _toDoList = json.decode(data);
-        print(_toDoList.toString());
-      });
+    bd.getNumberAtividade().then((tam) {
+      print(tam);
+      if (tam <= 1) {
+        at.name = "meditacao";
+        at.pos = "0";
+        _cont = 0;
+        bd.saveAtividade(at);
+      }  
+      if(_cont == 0) {
+        bd.getAtividade(2).then((value){
+          print("Posição: ${value.pos}");
+          _cont = int.parse(value.pos);
+          AppBuilder.of(context).rebuild();
+          });
+      }
+      else{
+        bd.getAtividade(2).then((value){
+          print("Posição: ${value.pos}");
+          print("Pos cont: ${_cont}");
+          });
+          at.pos = "$_cont";
+          at.id = 2; 
+          bd.updateAtividade(at);
+      }
     });
-  }
-
-   void _addToDo() {
-    setState(() {
-      Map<String, dynamic> newToDo = Map();
-      newToDo["pos"] = _cont;
-      _toDoList.add(newToDo);
-      _saveData();
-    });
-  }
-
-  Future<File> _getFile() async {
-    final directory = await getApplicationSupportDirectory();
-    return File("${directory.path}/medita.json");
-  }
-
-  Future<File> _saveData() async {
-    String data = json.encode(_toDoList);
-
-    final file = await _getFile();
-    return file.writeAsString(data);
-  }
-
-  Future<String> _readData() async {
-    try {
-      final file = await _getFile();
-      return file.readAsString();
-    } catch (e) {
-      return null;
-    }
-  }
-
-  Future<Null> _atualiza() async {
-    await Future.delayed(Duration(seconds: 1));
-
-    setState(() {
-      _toDoList.add(_cont);
-      return 0;
-      });
-      _saveData();
-    return null;
   }
   // ------------------------------------------------------------------------------------------
   @override
@@ -89,6 +66,9 @@ class _MeditacaoState extends State<Meditacao> {
             icon: Icon(Icons.refresh), 
             onPressed: (){
               _cont = 0;
+              at.pos = "$_cont";
+              at.id = 2; 
+              bd.updateAtividade(at);
               AppBuilder.of(context).rebuild(); 
             },
           ),

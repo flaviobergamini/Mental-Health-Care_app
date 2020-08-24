@@ -1,14 +1,16 @@
-import 'dart:convert';
-import 'dart:io';
+//import 'dart:convert';
+//import 'dart:io';
+//import 'dart:js_util';
 
+import 'package:MentalHealthCare/control/Database.dart';
 import 'package:MentalHealthCare/control/app_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_youtube/flutter_youtube.dart';
-import 'package:path_provider/path_provider.dart';
+//import 'package:path_provider/path_provider.dart';
 
 const API_KEY = "AIzaSyCUO4z2uEzVph-JilCmcqrTvZrS0GI7VKg";
 
-int _cont = 0;
+int _cont = 0, _aux = 0;
 
 class Exercicio extends StatefulWidget {
   @override
@@ -17,62 +19,39 @@ class Exercicio extends StatefulWidget {
 
 class _ExercicioState extends State<Exercicio> {
   // ------------------------------------------------------------------------------------------
-  List _toDoList = [];
-
-  Map<String, dynamic> _lastRemoved;
-  int _lastRemovedPos;
+  ContactHelper bd = ContactHelper();
+  AtividadeDB at = AtividadeDB();
 
   @override
   void initState() {
     super.initState();
-    _readData().then((data) {
-      setState(() {
-        _toDoList = json.decode(data);
-        print(_toDoList.toString());
-      });
+    bd.getNumberAtividade().then((tam) {
+      print(tam);
+      if (tam <= 0) {
+        at.name = "exercicio";
+        at.pos = "0";
+        _cont = 0;
+        bd.saveAtividade(at);
+      } 
+      if(_cont == 0) {
+        bd.getAtividade(1).then((value){
+          print("Posição: ${value.pos}");
+          _cont = int.parse(value.pos);
+          AppBuilder.of(context).rebuild();
+          });
+      }
+      else{
+        bd.getAtividade(1).then((value){
+          print("Posição: ${value.pos}");
+          print("Pos cont: ${_cont}");
+          });
+          at.pos = "$_cont";
+          at.id = 1; 
+          bd.updateAtividade(at);
+      }
     });
   }
 
-   void _addToDo() {
-    setState(() {
-      Map<String, dynamic> newToDo = Map();
-      newToDo["pos"] = _cont;
-      _toDoList.add(newToDo);
-      _saveData();
-    });
-  }
-
-  Future<File> _getFile() async {
-    final directory = await getApplicationSupportDirectory();
-    return File("${directory.path}/exercicio.json");
-  }
-
-  Future<File> _saveData() async {
-    String data = json.encode(_toDoList);
-
-    final file = await _getFile();
-    return file.writeAsString(data);
-  }
-
-  Future<String> _readData() async {
-    try {
-      final file = await _getFile();
-      return file.readAsString();
-    } catch (e) {
-      return null;
-    }
-  }
-
-  Future<Null> _atualiza() async {
-    await Future.delayed(Duration(seconds: 1));
-
-    setState(() {
-      _toDoList.add(_cont);
-      return 0;
-      });
-      _saveData();
-    return null;
-  }
   // ------------------------------------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
@@ -85,10 +64,13 @@ class _ExercicioState extends State<Exercicio> {
         backgroundColor: Colors.blue[500],
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.refresh), 
-            onPressed: (){
+            icon: Icon(Icons.refresh),
+            onPressed: () {
               _cont = 0;
-              AppBuilder.of(context).rebuild(); 
+              at.pos = "$_cont";
+              at.id = 1; 
+              bd.updateAtividade(at);
+              AppBuilder.of(context).rebuild();
             },
           ),
         ],
@@ -215,30 +197,30 @@ Widget _videos(BuildContext context, int index) {
           FlutterYoutube.playYoutubeVideoByUrl(
               apiKey: API_KEY,
               videoUrl: "https://www.youtube.com/watch?v=XW9IZfHiVZM");
-              _cont++;
+          _cont++;
           break;
         case 1:
           FlutterYoutube.playYoutubeVideoByUrl(
               apiKey: API_KEY,
               videoUrl: "https://www.youtube.com/watch?v=KwxCuTuknMk");
-              _cont++;
+          _cont++;
           break;
         case 2:
           FlutterYoutube.playYoutubeVideoByUrl(
               apiKey: API_KEY,
               videoUrl:
                   "https://www.youtube.com/watch?v=98eCqxrNBk8&feature=youtu.be");
-                  _cont++;
+          _cont++;
           break;
         case 3:
           FlutterYoutube.playYoutubeVideoByUrl(
               apiKey: API_KEY,
               videoUrl: "https://www.youtube.com/watch?v=A4tkULKy7RY&t=1s");
-              _cont++;
+          _cont++;
           break;
       }
 
-      AppBuilder.of(context).rebuild(); 
+      AppBuilder.of(context).rebuild();
     },
   );
 }

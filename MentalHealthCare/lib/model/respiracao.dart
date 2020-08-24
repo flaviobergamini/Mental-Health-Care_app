@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:MentalHealthCare/control/Database.dart';
 import 'package:MentalHealthCare/control/app_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_youtube/flutter_youtube.dart';
@@ -10,43 +11,6 @@ import 'package:path_provider/path_provider.dart';
 const API_KEY = "AIzaSyCUO4z2uEzVph-JilCmcqrTvZrS0GI7VKg";
 
 int _cont = 0;
-List _toDoList = [];
-/*
-class CounterStorage {
-  Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-
-    return directory.path;
-  }
-
-  Future<File> get _localFile async {
-    final path = await _localPath;
-    return File('$path/respira.txt');
-  }
-
-  Future<int> readCounter() async {
-    try {
-      final file = await _localFile;
-
-      // Read the file
-      String contents = await file.readAsString();
-
-      return int.parse(contents);
-    } catch (e) {
-      // If encountering an error, return 0
-      return 0;
-    }
-  }
-
-  Future<File> writeCounter(int counter) async {
-    final file = await _localFile;
-
-    // Write the file
-    return file.writeAsString('$counter');
-  }
-}
-*/
-// ------------------------------------------------------------------------------------------
 
 class Respiracao extends StatefulWidget {
   //CounterStorage storage;
@@ -56,95 +20,38 @@ class Respiracao extends StatefulWidget {
 
 class _RespiracaoState extends State<Respiracao> {
   
-  //int _counter;
-/*
+  ContactHelper bd = ContactHelper();
+  AtividadeDB at = AtividadeDB();
+
   @override
   void initState() {
     super.initState();
-    widget.storage.readCounter().then((int value) {
-      setState(() {
-        _cont = value;
-      });
-    });
-  } */
-
-/*
-  Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-
-    return directory.path;
-  }
-
-  Future<File> get _localFile async {
-    final path = await _localPath;
-    return File('$path/respira.txt');
-  }
-
-  Future<File> writeCounter(int counter) async {
-  final file = await _localFile;
-
-  // Write the file.
-  return file.writeAsString('$counter');
-}
-
-Future<int> readCounter() async {
-  try {
-    final file = await _localFile;
-
-    // Read the file.
-    String contents = await file.readAsString();
-
-    return int.parse(contents);
-  } catch (e) {
-    // If encountering an error, return 0.
-    return 0;
-  }
-}
-
-
-
-
-
-   void _addToDo() {
-    setState(() {
-      Map<String, dynamic> newToDo = Map();
-      newToDo["pos"] = _cont;
-      _toDoList.add(newToDo);
-      _saveData();
+    bd.getNumberAtividade().then((tam) {
+      print(tam);
+      if (tam <= 2) {
+        at.name = "respiracao";
+        at.pos = "0";
+        _cont = 0;
+        bd.saveAtividade(at);
+      }   
+      if(_cont == 0) {
+        bd.getAtividade(3).then((value){
+          print("Posição: ${value.pos}");
+          _cont = int.parse(value.pos);
+          AppBuilder.of(context).rebuild();
+          });
+      }
+      else{
+        bd.getAtividade(3).then((value){
+          print("Posição: ${value.pos}");
+          print("Pos cont: ${_cont}");
+          });
+          at.pos = "$_cont";
+          at.id = 3; 
+          bd.updateAtividade(at);
+      }
     });
   }
-
-  Future<File> _getFile() async {
-    final directory = await getApplicationSupportDirectory();
-    return File("${directory.path}/respira.json");
-  }
-
-  Future<File> _saveData() async {
-    String data = json.encode(_toDoList);
-
-    final file = await _getFile();
-    return file.writeAsString(data);
-  }
-
-  Future<String> _readData() async {
-    try {
-      final file = await _getFile();
-      return file.readAsString();
-    } catch (e) {
-      return null;
-    }
-  }
-
-  Future<Null> _atualiza() async {
-    await Future.delayed(Duration(seconds: 1));
-
-    setState(() {
-      _toDoList.add(_cont);
-      return 0;
-      });
-      _saveData();
-    return null;
-  } */
   // ------------------------------------------------------------------------------------------
 
   @override
@@ -161,7 +68,10 @@ Future<int> readCounter() async {
             icon: Icon(Icons.refresh), 
             onPressed: (){
               _cont = 0;
-              AppBuilder.of(context).rebuild(); 
+              at.pos = "$_cont";
+              at.id = 3; 
+              bd.updateAtividade(at);
+              AppBuilder.of(context).rebuild();
             },
             ),
         ],
